@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from datetime import datetime
 import json
+import os
 print("Application Starting...")
 
 app = Flask(__name__)
@@ -163,4 +164,5 @@ def dashboard():
 
 # Main Program
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
