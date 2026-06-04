@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from datetime import datetime
 import json
 import os
@@ -128,39 +128,11 @@ def dashboard():
     with open("incidents.json", "r") as file:
         incidents = json.load(file)
 
-    total_incidents = len(incidents)
-
-    html = f"""
-    <html>
-    <head>
-        <title>Incident Dashboard</title>
-    </head>
-    <body>
-        <h1>Smart Incident Dashboard</h1>
-
-        <h2>Total Incidents: {total_incidents}</h2>
-
-        <h3>Incident History</h3>
-
-        <ul>
-    """
-
-    for incident in incidents:
-        html += f"""
-        <li>
-        {incident['incident_id']} -
-        {incident['service']} -
-        {incident['severity']}
-        </li>
-        """
-
-    html += """
-        </ul>
-    </body>
-    </html>
-    """
-
-    return html
+    return render_template(
+        "dashboard.html",
+        incidents=incidents,
+        total_incidents=len(incidents)
+    )
 
 # Main Program
 if __name__ == "__main__":

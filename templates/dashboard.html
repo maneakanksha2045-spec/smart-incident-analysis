@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Incident Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            width: 250px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background-color: #0078d7;
+            color: white;
+            padding: 12px;
+        }
+
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+
+</head>
+<body>
+
+    <h1>🚀 Smart Incident Dashboard</h1>
+
+    <div class="card">
+        <h2>Total Incidents</h2>
+        <h1>{{ total_incidents }}</h1>
+    </div>
+
+    <h2>Incident History</h2>
+
+    <table>
+        <tr>
+            <th>Incident ID</th>
+            <th>Timestamp</th>
+            <th>Service</th>
+            <th>Severity</th>
+            <th>Root Cause</th>
+        </tr>
+
+        {% for incident in incidents %}
+        <tr>
+            <td>{{ incident.incident_id }}</td>
+            <td>{{ incident.timestamp }}</td>
+            <td>{{ incident.service }}</td>
+            <td>{{ incident.severity }}</td>
+            <td>{{ incident.root_cause }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+</body>
+</html>
