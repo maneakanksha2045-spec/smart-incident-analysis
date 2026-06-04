@@ -1,0 +1,25 @@
+[
+    {
+        "incident_id": "INC1004",
+        "service": "Order-Service",
+        "severity": "Critical",
+        "root_cause": "High CPU Utilization",
+        "recommendation": "Scale service or optimize application code"
+    },
+    {
+        "incident_id": "INC1005",
+        "timestamp": "2026-06-04 15:37:35",
+        "service": "Payment-Service",
+        "severity": "High",
+        "root_cause": "High CPU Utilization",
+        "recommendation": "Scale service or optimize application code"
+    },
+    {
+        "incident_id": "INC1006",
+        "timestamp": "2026-06-04 15:45:59",
+        "service": "User-Service",
+        "severity": "Medium",
+        "root_cause": "High CPU Utilization",
+        "recommendation": "Scale service or optimize application code"
+    }
+]
