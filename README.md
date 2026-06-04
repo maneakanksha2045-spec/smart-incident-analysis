@@ -1,53 +1,54 @@
 # Smart Incident Analysis Tool
 
 ## Overview
-A Python Flask-based Incident Analysis System that detects root causes from metrics and logs, generates recommendations, and stores incident history.
+A Flask-based web application that analyzes incident reports and categorizes them based on severity levels.
 
 ## Features
-- Incident Analysis API
-- Root Cause Detection
-- Log Analysis
-- Incident History Storage
-- Search Incident by ID
-- Dashboard View
-- Timestamp Tracking
+- Incident logging
+- Severity classification
+- JSON-based data storage
+- Flask web interface
+- Simple and user-friendly dashboard
 
 ## Technologies Used
 - Python
 - Flask
 - JSON
-- REST APIs
+- HTML/CSS
 
-## API Endpoints
+## Project Structure
 
-### Home
-GET /
+smart-incident-analysis/
+│
+├── app.py
+├── incidents.json
+├── requirements.txt
+├── README.md
+└── .gitignore
 
-### Metrics
-GET /metrics
+## Installation
 
-### Analyze Incident
-POST /analyze
+1. Clone the repository
 
-### Get All Incidents
-GET /incidents
+git clone https://github.com/maneakanksha2045-spec/smart-incident-analysis.git
 
-### Search Incident
-GET /incident/<incident_id>
+2. Install dependencies
 
-### Dashboard
-GET /dashboard
-
-## Run the Project
-
-Install dependencies:
-
-```bash
 pip install -r requirements.txt
-```
 
-Run:
+3. Run the application
 
-```bash
 python app.py
-```
+
+4. Open browser
+
+http://127.0.0.1:5000
+
+## Future Enhancements
+- Database integration
+- User authentication
+- Cloud deployment
+- AI-based incident prediction
+
+## Author
+Akanksha Mane
