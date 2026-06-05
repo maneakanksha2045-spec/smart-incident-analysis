@@ -2,9 +2,29 @@ from flask import Flask, jsonify, request, render_template
 from datetime import datetime
 import json
 import os
+import sqlite3
 print("Application Starting...")
 
 app = Flask(__name__)
+
+def create_table():
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+CREATE TABLE IF NOT EXISTS incidents (
+    incident_id TEXT PRIMARY KEY,
+    timestamp TEXT,
+    service TEXT,
+    severity TEXT,
+    root_cause TEXT,
+    recommendation TEXT
+)
+""")
+
+    conn.commit()
+    conn.close()
 
 # Dummy Metrics
 def fetch_metrics():
@@ -25,13 +45,26 @@ def fetch_logs():
 # Save Incident History
 def save_incident(incident):
 
-    with open("incidents.json", "r") as file:
-        incidents = json.load(file)
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
 
-    incidents.append(incident)
+    cursor.execute("""
+    INSERT INTO incidents VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        incident["incident_id"],
+        incident["timestamp"],
+        incident["service"],
+        incident["severity"],
+        incident["root_cause"],
+        incident["recommendation"]
+    ))
 
-    with open("incidents.json", "w") as file:
-        json.dump(incidents, file, indent=4)
+    conn.commit()
+    conn.close()
+
+# Call function here
+create_table()
+
 # Root Cause Analysis Logic
 def analyze_root_cause(metrics,logs):
 
@@ -105,28 +138,78 @@ def analyze():
 @app.route("/incidents")
 def get_incidents():
 
-    with open("incidents.json", "r") as file:
-        incidents = json.load(file)
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM incidents")
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    incidents = []
+
+    for row in rows:
+        incidents.append({
+            "incident_id": row[0],
+            "timestamp": row[1],
+            "service": row[2],
+            "severity": row[3],
+            "root_cause": row[4],
+            "recommendation": row[5]
+        })
 
     return jsonify(incidents)
 
 @app.route("/incident/<incident_id>")
 def get_incident_by_id(incident_id):
 
-    with open("incidents.json", "r") as file:
-        incidents = json.load(file)
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
 
-    for incident in incidents:
-        if incident["incident_id"] == incident_id:
-            return jsonify(incident)
+    cursor.execute(
+        "SELECT * FROM incidents WHERE incident_id=?",
+        (incident_id,)
+    )
+
+    row = cursor.fetchone()
+
+    conn.close()
+
+    if row:
+        return jsonify({
+            "incident_id": row[0],
+            "timestamp": row[1],
+            "service": row[2],
+            "severity": row[3],
+            "root_cause": row[4],
+            "recommendation": row[5]
+        })
 
     return jsonify({"message": "Incident not found"})
 
 @app.route("/dashboard")
 def dashboard():
 
-    with open("incidents.json", "r") as file:
-        incidents = json.load(file)
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM incidents")
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    incidents = []
+
+    for row in rows:
+        incidents.append({
+            "incident_id": row[0],
+            "timestamp": row[1],
+            "service": row[2],
+            "severity": row[3],
+            "root_cause": row[4],
+            "recommendation": row[5]
+        })
 
     return render_template(
         "dashboard.html",
