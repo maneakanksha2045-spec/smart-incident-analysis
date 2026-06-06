@@ -1,30 +1,49 @@
 from flask import Flask, jsonify, request, render_template
-from datetime import datetime
+import jwt
+from datetime import datetime, timedelta
+from functools import wraps
 import json
+from db_config import db
 import os
-import sqlite3
+import mysql.connector
 print("Application Starting...")
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'smartincidentsecret'
+cursor = db.cursor()
+def get_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="akanksha123",
+        database="incident_db"
+    )
 
-def create_table():
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
 
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
+        token = request.headers.get("Authorization")
 
-    cursor.execute("""
-CREATE TABLE IF NOT EXISTS incidents (
-    incident_id TEXT PRIMARY KEY,
-    timestamp TEXT,
-    service TEXT,
-    severity TEXT,
-    root_cause TEXT,
-    recommendation TEXT
-)
-""")
+        if not token:
+          token = request.cookies.get("token")
 
-    conn.commit()
-    conn.close()
+        try:
+            data = jwt.decode(
+                token,
+                app.config['SECRET_KEY'],
+                algorithms=["HS256"]
+            )
+
+            print("Decoded Token:", data)
+
+        except Exception as e:
+            print("JWT Error:", e)
+            return jsonify({"message": str(e)}), 401
+
+        return f(*args, **kwargs)
+
+    return decorated
 
 # Dummy Metrics
 def fetch_metrics():
@@ -45,25 +64,28 @@ def fetch_logs():
 # Save Incident History
 def save_incident(incident):
 
-    conn = sqlite3.connect("database.db")
+    conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
-    INSERT INTO incidents VALUES (?, ?, ?, ?, ?, ?)
-    """, (
+    query = """
+    INSERT INTO incidents
+    (incident_id,timestamp,service,severity,root_cause,recommendation)
+    VALUES (%s,%s,%s,%s,%s,%s)
+    """
+
+    values = (
         incident["incident_id"],
         incident["timestamp"],
         incident["service"],
         incident["severity"],
         incident["root_cause"],
         incident["recommendation"]
-    ))
+    )
+
+    cursor.execute(query, values)
 
     conn.commit()
     conn.close()
-
-# Call function here
-create_table()
 
 # Root Cause Analysis Logic
 def analyze_root_cause(metrics,logs):
@@ -136,9 +158,10 @@ def analyze():
     return jsonify(incident_record)
 
 @app.route("/incidents")
+@token_required
 def get_incidents():
 
-    conn = sqlite3.connect("database.db")
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM incidents")
@@ -160,16 +183,18 @@ def get_incidents():
         })
 
     return jsonify(incidents)
+    
 
 @app.route("/incident/<incident_id>")
+@token_required
 def get_incident_by_id(incident_id):
 
-    conn = sqlite3.connect("database.db")
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT * FROM incidents WHERE incident_id=?",
-        (incident_id,)
+    "SELECT * FROM incidents WHERE incident_id=%s",
+    (incident_id,)
     )
 
     row = cursor.fetchone()
@@ -191,7 +216,7 @@ def get_incident_by_id(incident_id):
 @app.route("/dashboard")
 def dashboard():
 
-    conn = sqlite3.connect("database.db")
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM incidents")
@@ -216,6 +241,51 @@ def dashboard():
         incidents=incidents,
         total_incidents=len(incidents)
     )
+
+@app.route("/login", methods=["POST"])
+def login():
+
+    data = request.get_json()
+
+    username = data["username"]
+    password = data["password"]
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT * FROM users WHERE username=%s AND password=%s",
+        (username, password)
+    )
+
+    user = cursor.fetchone()
+
+    conn.close()
+
+    if user:
+
+        token = jwt.encode(
+            {
+                "username": username,
+                "role": user[3],
+                "exp": datetime.utcnow() + timedelta(hours=1)
+            },
+            app.config['SECRET_KEY'],
+            algorithm="HS256"
+        )
+
+        return jsonify({
+            "message": "Login Successful",
+            "token": token
+        })
+
+    return jsonify({
+        "message": "Invalid Credentials"
+    }), 401
+
+@app.route("/login-page")
+def login_page():
+    return render_template("login.html")
 
 # Main Program
 if __name__ == "__main__":
