@@ -14,8 +14,8 @@ cursor = db.cursor()
 def get_connection():
     return mysql.connector.connect(
         host="localhost",
-        user="root",
-        password="akanksha123",
+        user="incidentuser",
+        password="Incident123",
         database="incident_db"
     )
 
