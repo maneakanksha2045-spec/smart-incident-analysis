@@ -1,89 +1,42 @@
 # Smart Incident Analyzer
 
-A Flask-based Incident Management System that performs Root Cause Analysis, stores incidents in MySQL, provides a dashboard for monitoring, and secures APIs using JWT Authentication.
+A cloud-based incident analysis application built using Flask, MariaDB, and AWS EC2. The system analyzes incidents, identifies possible root causes, and stores incident history for monitoring and troubleshooting.
 
 ## Features
 
-- Incident Creation and Tracking
-- Root Cause Analysis Engine
-- MySQL Database Integration
+- Incident Analysis API
+- Root Cause Detection
+- Incident History Storage
 - JWT Authentication
-- User Login System
-- Incident Dashboard
-- REST APIs
-- Incident Search and Monitoring
+- Dashboard for Incident Monitoring
+- MariaDB Database Integration
+- AWS EC2 Deployment
 
 ## Tech Stack
 
 - Python
 - Flask
-- MySQL
-- JWT (PyJWT)
+- MariaDB
+- AWS EC2
+- GitHub
 - HTML
 - CSS
-- Bootstrap
 - JavaScript
 
 ## Project Structure
 
+```
 smart-incident-analysis/
-
+│
 ├── app.py
-
 ├── db_config.py
-
 ├── requirements.txt
-
 ├── templates/
-
-│ ├── login.html
-
-│ └── dashboard.html
-
+│   ├── dashboard.html
+│   └── login.html
+├── incident_db_users.sql
+├── incident_db_incidents.sql
 └── README.md
-
-## Database Setup
-
-### Create Database
-
-```sql
-CREATE DATABASE incident_db;
-USE incident_db;
-```
-
-### Create Incidents Table
-
-```sql
-CREATE TABLE incidents (
-    incident_id VARCHAR(50) PRIMARY KEY,
-    timestamp DATETIME,
-    service VARCHAR(100),
-    severity VARCHAR(50),
-    root_cause TEXT,
-    recommendation TEXT
-);
-```
-
-### Create Users Table
-
-```sql
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(100) UNIQUE,
-    password VARCHAR(255),
-    role VARCHAR(50)
-);
-```
-
-### Insert Admin User
-
-```sql
-INSERT INTO users(username,password,role)
-VALUES(
-'admin',
-'admin123',
-'Admin'
-);
 ```
 
 ## Installation
@@ -91,7 +44,7 @@ VALUES(
 ### Clone Repository
 
 ```bash
-git clone <your-github-repository-url>
+git clone https://github.com/maneakanksha2045-spec/smart-incident-analysis.git
 cd smart-incident-analysis
 ```
 
@@ -101,48 +54,104 @@ cd smart-incident-analysis
 pip install -r requirements.txt
 ```
 
+### Configure Database
+
+Create a MariaDB database:
+
+```sql
+CREATE DATABASE incident_db;
+```
+
+Import SQL files:
+
+```bash
+mysql -u username -p incident_db < incident_db_users.sql
+mysql -u username -p incident_db < incident_db_incidents.sql
+```
+
 ### Run Application
 
 ```bash
 python app.py
 ```
 
-## Application URLs
+Application will run on:
 
-### Login Page
+```text
+http://localhost:8080
+```
 
-http://127.0.0.1:8080/login-page
+## API Endpoints
 
-### Dashboard
+### Home
 
-http://127.0.0.1:8080/dashboard
+```http
+GET /
+```
 
-### Metrics API
+### Metrics
 
-http://127.0.0.1:8080/metrics
+```http
+GET /metrics
+```
 
-## Default Credentials
+### Analyze Incident
 
-Username: admin
+```http
+POST /analyze
+```
 
-Password: admin123
+Example Request:
 
-## JWT Authentication
+```json
+{
+  "incident_id": "INC001",
+  "service": "Payment-Service",
+  "severity": "High"
+}
+```
 
-Users must authenticate through the login API.
+### Get All Incidents
 
-After successful login, a JWT token is generated and used to access protected APIs.
+```http
+GET /incidents
+```
 
-## Future Enhancements
+### Get Incident by ID
 
-- AI-Based Root Cause Analysis
-- Email Notifications
-- Cloud Deployment (AWS/Render)
-- Role-Based Access Control
-- Real-Time Monitoring Dashboard
+```http
+GET /incident/<incident_id>
+```
+
+## Dashboard
+
+Access dashboard:
+
+```text
+http://<server-ip>:8080/dashboard
+```
+
+## AWS Deployment
+
+The project is deployed on AWS EC2 using:
+
+- Amazon Linux
+- MariaDB
+- Flask
+- GitHub
+
+## Learning Outcomes
+
+- Cloud Deployment on AWS EC2
+- Database Integration with MariaDB
+- REST API Development
+- JWT Authentication
+- Linux Server Management
+- Git and GitHub Version Control
 
 ## Author
 
 Akanksha Mane
 
-BCA Student
+GitHub:
+https://github.com/maneakanksha2045-spec
