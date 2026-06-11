@@ -2,6 +2,16 @@
 
 A cloud-based incident analysis application built using Flask, MariaDB, and AWS EC2. The system analyzes incidents, identifies possible root causes, and stores incident history for monitoring and troubleshooting.
 
+## Live Demo
+
+The application is deployed on AWS EC2.
+
+Dashboard:
+http://3.109.115.108:8080/dashboard
+
+Home:
+http://3.109.115.108:8080
+
 ## Features
 
 - Incident Analysis API
@@ -25,7 +35,7 @@ A cloud-based incident analysis application built using Flask, MariaDB, and AWS 
 
 ## Project Structure
 
-```
+```text
 smart-incident-analysis/
 │
 ├── app.py
@@ -123,12 +133,18 @@ GET /incidents
 GET /incident/<incident_id>
 ```
 
+### Login
+
+```http
+POST /login
+```
+
 ## Dashboard
 
 Access dashboard:
 
 ```text
-http://<server-ip>:8080/dashboard
+http://3.109.115.108:8080/dashboard
 ```
 
 ## AWS Deployment
@@ -136,8 +152,8 @@ http://<server-ip>:8080/dashboard
 The project is deployed on AWS EC2 using:
 
 - Amazon Linux
-- MariaDB
 - Flask
+- MariaDB
 - GitHub
 
 ## Learning Outcomes
